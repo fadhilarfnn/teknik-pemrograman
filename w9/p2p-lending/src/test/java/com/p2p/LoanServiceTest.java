@@ -1,5 +1,7 @@
 package com.p2p;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import com.p2p.domain.Borrower;
@@ -10,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.math.BigDecimal;
 
 public class LoanServiceTest {
+    private static final Logger logger = LogManager.getLogger(LoanServiceTest.class);
     @Test
     void shouldRejectLoanWhenBorrowerNotVerified() {
 
@@ -19,16 +22,19 @@ public class LoanServiceTest {
         // Ketika borrower mengajukan pinjaman
         // Maka sistem harus menolak dengan melempar exception
         // =====================================================
+        logger.info("=== TC-01 START ===");
         // =========================
         // Arrange (Initial Condition)
         // =========================
         // Borrower belum lolos proses KYC
         Borrower borrower = new Borrower(false, 700);
+        logger.info("Borrower dibuat: verified=false, creditScore=700");
         // Service untuk pengajuan loan
         LoanService loanService = new LoanService();
 
         // Jumlah pinjaman valid
         BigDecimal amount = BigDecimal.valueOf(1000);
+        logger.info("Amount = 1000");
         // =========================
         // Act (Action)
         // =========================
@@ -40,6 +46,7 @@ public class LoanServiceTest {
         assertThrows(IllegalArgumentException.class, () -> {
             loanService.createLoan(borrower, amount);
         });
+        logger.info("TC-01 PASSED: Exception berhasil ditangkap");
     }
 
     @Test
@@ -50,15 +57,19 @@ public class LoanServiceTest {
         //Expected:
         //  - Exception
 
+        logger.info("=== TC-02 START ===");
         Borrower borrower = new Borrower(true, 700);
+        logger.info("Borrower dibuat: verified=True, creditScore=700");
 
         LoanService loanService = new LoanService();
 
         BigDecimal amount = BigDecimal.valueOf(-1);
+        logger.info("Amount = -1");
 
         assertThrows(IllegalArgumentException.class, () -> {
             loanService.createLoan(borrower, amount);
         });
+        logger.info("TC-02 PASSED: Exception berhasil ditangkap");
     }
 
     @Test
@@ -69,15 +80,19 @@ public class LoanServiceTest {
         //Expected:
         //  - Status = APPROVED
 
+        logger.info("=== TC-03 START ===");
         Borrower borrower = new Borrower(true, 700);
+        logger.info("Borrower dibuat: verified=True, creditScore=700 >= treshold");
 
         LoanService loanService = new LoanService();
 
         BigDecimal amount = BigDecimal.valueOf(100);
+        logger.info("Amount = 100");
 
         Loan loan = loanService.createLoan(borrower, amount);
         
         assertEquals(Loan.Status.APPROVED, loan.getStatus());
+        logger.info("TC-03 PASSED: Status loan = APPROVED");
     }
 
     @Test
@@ -88,14 +103,18 @@ public class LoanServiceTest {
         //Expected:
         //  - Status = REJECTED
 
+        logger.info("=== TC-04 START ===");
         Borrower borrower = new Borrower(true, 500);
+        logger.info("Borrower dibuat: verified=True, creditScore=500 < treshold");
 
         LoanService loanService = new LoanService();
 
         BigDecimal amount = BigDecimal.valueOf(100);
+        logger.info("Amount = 100");
 
         Loan loan = loanService.createLoan(borrower, amount);
         
-        assertEquals(Loan.Status.REJECTED, loan.getStatus());        
+        assertEquals(Loan.Status.REJECTED, loan.getStatus());
+        logger.info("TC-04 PASSED: Status loan = REJECTED");  
     }
 }
