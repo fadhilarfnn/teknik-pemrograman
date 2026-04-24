@@ -1,9 +1,0 @@
-{
-    "java.project.sourcePaths": [
-        "src",
-        "soal2",
-        "soal3"
-    ],
-    "java.project.outputPath": "bin",
-    "java.project.referencedLibraries": []
-}
